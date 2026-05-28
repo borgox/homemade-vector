@@ -16,11 +16,13 @@ class Vector {
         }
         data_[index].~T();
     }
+
     void destroyElements() {
         for (std::size_t i = 0; i < size_; i++) {
             destroyAt(i);
         }
     }
+
     void destroy() {
         if (data_ == nullptr) {
             return;
@@ -51,7 +53,7 @@ public:
                 throw std::runtime_error("Vector copy constructor: could not allocate memory");
             }
             for (std::size_t i = 0; i < other.size(); i++) {
-                new (data_ + i) T(other.data()[i]);
+                new(data_ + i) T(other.data()[i]);
             }
         }
     }
@@ -77,7 +79,7 @@ public:
         }
 
         for (std::size_t i = 0; i < other.size(); i++) {
-            new (data_ + i) T(other.data()[i]);
+            new(data_ + i) T(other.data()[i]);
         }
         return *this;
     }
@@ -183,18 +185,19 @@ public:
             memcpy(temp, data_, size_ * sizeof(T));
         } else {
             for (std::size_t i = 0; i < size_; i++) {
-                new (temp + i) T(data_[i]);
+                new(temp + i) T(data_[i]);
             }
         }
         destroy();
         data_ = temp;
         capacity_ = n;
     }
+
     void resize(size_t n) {
         reserve(n);
         if (n > size_) {
             for (size_t i = size_; i < n; i++) {
-                new (data_ + i) T();
+                new(data_ + i) T();
             }
         } else if (n < size_) {
             for (size_t i = n; i < size_; i++) {
@@ -203,7 +206,8 @@ public:
         }
         size_ = n;
     }
-    void insert(size_t index, const T& value) {
+
+    void insert(size_t index, const T &value) {
         if (index > size_) {
             throw std::out_of_range("Vector: Index out of bounds");
         }
@@ -213,7 +217,7 @@ public:
         // Shift
         for (size_t i = size_; i > index; i--) {
             if (i == size_) {
-                new(&data_[i]) T(data_[i-1]);
+                new(&data_[i]) T(data_[i - 1]);
             } else {
                 data_[i] = std::move(data_[i - 1]);
             }
@@ -222,34 +226,36 @@ public:
         data_[index] = value;
         size_++;
     }
-    void erase(size_t const index ) {
+
+    void erase(size_t const index) {
         if (index >= size_) {
             throw std::out_of_range("Vector: Index out of bounds");
         }
         destroyAt(index);
         for (size_t i = index; i < size_ - 1; i++) {
             if (i == size_) {
-                new(&data_[i]) T(data_[i+1]);
+                new(&data_[i]) T(data_[i + 1]);
             } else {
                 data_[i] = std::move(data_[i + 1]);
             }
-         }
+        }
         size_--;
     }
-    void push_back(const T& value) {
+
+    void push_back(const T &value) {
         if (size_ == capacity_) {
             reserve(capacity_ != 0 ? capacity_ * 2 : 1);
         }
-        new (&data_[size_]) T(value);
+        new(&data_[size_]) T(value);
         size_++;
     }
 
     T pop_back() {
         if (size_ == 0) {
-            throw std::out_of_range("pop_back on empty_vector");
+            throw std::out_of_range("pop_back on empty vector");
         }
         size_--;
-        T val = data_[size_];
+        T val = std::move(data_[size_]);
         data_[size_].~T();
         return val;
     }
@@ -282,7 +288,7 @@ int main() {
     v.push_back(2);
     v.push_back(3);
 
-    for (auto x : v) {
+    for (auto x: v) {
         std::cout << x << std::endl;
     }
 
