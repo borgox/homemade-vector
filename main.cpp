@@ -208,17 +208,7 @@ public:
             throw std::out_of_range("Vector: Index out of bounds");
         }
         if (size_ == capacity_) {
-            // same code as push_back. Might refactor into a func someday
-            capacity_ = capacity_ != 0 ? capacity_ * 2 : 1;
-            auto temp = static_cast<T *>(malloc(sizeof(T) * capacity_));
-            if (temp == nullptr) {
-                throw std::runtime_error("Vector.push_back: Could not allocate memory");
-            }
-            for (std::size_t i = 0; i < size_; i++) {
-                new (temp + i) T(data_[i]);
-            }
-            destroy();
-            data_ = temp;
+            reserve(capacity_ != 0 ? capacity_ * 2 : 1);
         }
         // Shift
         for (size_t i = size_; i > index; i--) {
