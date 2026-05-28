@@ -16,14 +16,17 @@ class Vector {
         }
         data_[index].~T();
     }
-    void destroy() {
+    void destroyElements() {
         if (data_ == nullptr) {
             return;
         }
-
+        
         for (std::size_t i = 0; i < size_; i++) {
             destroyAt(i);
         }
+    }
+    void destroy() {
+        destroyElements();
         free(data_);
         data_ = nullptr;
     }
@@ -168,7 +171,7 @@ public:
         if (empty()) {
             return;
         }
-        destroy();
+        destroyElements();
         size_ = 0;
         capacity_ = 0;
     }
@@ -238,23 +241,10 @@ public:
     }
     void push_back(const T& value) {
         if (size_ == capacity_) {
-            capacity_ = capacity_ != 0 ? capacity_ * 2 : 1;
-            auto temp = static_cast<T *>(malloc(sizeof(T) * capacity_));
-            if (temp == nullptr) {
-                throw std::runtime_error("Vector.push_back: Could not allocate memory");
-            }
-            for (std::size_t i = 0; i < size_; i++) {
-                new (temp + i) T(data_[i]);
-            }
-            destroy();
-            data_ = temp;
-
-            new (data_ + size_) T(value);
-            size_++;
-        } else if (size_ < capacity_) {
-            new (&data_[size_]) T(value);
-            size_++;
+            reserve(capacity_ != 0 ? capacity_ * 2 : 1);
         }
+        new (&data_[size_]) T(value);
+        size_++;
     }
 
     T pop_back() {
