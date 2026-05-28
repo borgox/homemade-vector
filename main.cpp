@@ -201,7 +201,7 @@ public:
         }
         size_ = n;
     }
-    void insert(size_t index, T value) {
+    void insert(size_t index, const T& value) {
         if (index > size_) {
             throw std::out_of_range("Vector: Index out of bounds");
         }
@@ -236,7 +236,7 @@ public:
          }
         size_--;
     }
-    void push_back(T value) {
+    void push_back(const T& value) {
         if (size_ == capacity_) {
             capacity_ = capacity_ != 0 ? capacity_ * 2 : 1;
             auto temp = static_cast<T *>(malloc(sizeof(T) * capacity_));
