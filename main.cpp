@@ -17,14 +17,14 @@ class Vector {
         data_[index].~T();
     }
     void destroyElements() {
-        if (data_ == nullptr) {
-            return;
-        }
         for (std::size_t i = 0; i < size_; i++) {
             destroyAt(i);
         }
     }
     void destroy() {
+        if (data_ == nullptr) {
+            return;
+        }
         destroyElements();
         free(data_);
         data_ = nullptr;
@@ -167,12 +167,8 @@ public:
     }
 
     void clear() {
-        if (empty()) {
-            return;
-        }
         destroyElements();
         size_ = 0;
-        capacity_ = 0;
     }
 
     void reserve(size_t n) {
@@ -183,8 +179,12 @@ public:
         if (temp == nullptr) {
             throw std::runtime_error("Vector.push_back: Could not allocate memory");
         }
-        for (std::size_t i = 0; i < size_; i++) {
-            new (temp + i) T(data_[i]);
+        if constexpr (std::is_trivially_copyable_v<T>) {
+            memcpy(temp, data_, size_ * sizeof(T));
+        } else {
+            for (std::size_t i = 0; i < size_; i++) {
+                new (temp + i) T(data_[i]);
+            }
         }
         destroy();
         data_ = temp;
