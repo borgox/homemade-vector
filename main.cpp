@@ -215,7 +215,7 @@ public:
             if (i == size_) {
                 new(&data_[i]) T(data_[i-1]);
             } else {
-                data_[i] = data_[i-1];
+                data_[i] = std::move(data_[i - 1]);
             }
         }
         // Insert
@@ -231,7 +231,7 @@ public:
             if (i == size_) {
                 new(&data_[i]) T(data_[i+1]);
             } else {
-                data_[i] = data_[i + 1];
+                data_[i] = std::move(data_[i + 1]);
             }
          }
         size_--;
