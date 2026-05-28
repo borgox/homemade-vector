@@ -20,7 +20,6 @@ class Vector {
         if (data_ == nullptr) {
             return;
         }
-        
         for (std::size_t i = 0; i < size_; i++) {
             destroyAt(i);
         }
@@ -223,7 +222,11 @@ public:
         }
         // Shift
         for (size_t i = size_; i > index; i--) {
-            data_[i] = data_[i-1];
+            if (i == size_) {
+                new(&data_[i]) T(data_[i-1]);
+            } else {
+                data_[i] = data_[i-1];
+            }
         }
         // Insert
         data_[index] = value;
@@ -235,7 +238,11 @@ public:
         }
         destroyAt(index);
         for (size_t i = index; i < size_ - 1; i++) {
-            data_[i] = data_[i + 1];
+            if (i == size_) {
+                new(&data_[i]) T(data_[i+1]);
+            } else {
+                data_[i] = data_[i + 1];
+            }
          }
         size_--;
     }
