@@ -272,7 +272,7 @@ public:
     }
 
     [[nodiscard]] T *end() noexcept {
-        return data_ ? data_ + size_ : nullptr;
+        return data_ + size_;
     }
 
     [[nodiscard]] const T *begin() const noexcept {
